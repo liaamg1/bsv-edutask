@@ -43,6 +43,26 @@ def dao():
     client.close()
 
 @pytest.mark.unit
+def test_create_valid_returns_inserted_document(dao):
+    """Data compliant to the validator returns the object parsed to JSON with an _id attribute."""
+    data = {"name": "123", "email": "local-part@domain.host"}
+
+    result = dao.create(data)
+
+    assert result["name"] == data["name"]
+    assert result["email"] == data["email"]
+    assert "_id" in result
+
+
+@pytest.mark.unit
+def test_create_missing_required_field(dao):
+    """Data missing required field raises WriteError."""
+    data = {"name": "Alice"}
+
+    with pytest.raises(WriteError):
+        dao.create(data)
+        
+@pytest.mark.unit
 def test_create_type_invalid(dao):
     """Data containing the wrong data type raises WriteError"""
     data = {"name": 123,"email":"local-part@domain.host"}
