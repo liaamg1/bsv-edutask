@@ -1,16 +1,7 @@
 import pytest
 from unittest.mock import patch
 from pymongo import MongoClient
-from dotenv import dotenv_values
-import os
 from pymongo.errors import WriteError
-
-from src.util.dao import DAO
-
-import pytest
-from unittest.mock import patch
-from pymongo import MongoClient
-from pymongo.errors import WriteError, DuplicateKeyError
 
 from src.util.dao import DAO
 
