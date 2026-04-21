@@ -7,6 +7,13 @@ from pymongo.errors import WriteError
 
 from src.util.dao import DAO
 
+import pytest
+from unittest.mock import patch
+from pymongo import MongoClient
+from pymongo.errors import WriteError, DuplicateKeyError
+
+from src.util.dao import DAO
+
 VALIDATOR = {
     "$jsonSchema": {
         "bsonType": "object",
@@ -18,26 +25,23 @@ VALIDATOR = {
     }
 }
 
-
 @pytest.fixture
 def dao():
-    local_url = dotenv_values('.env').get('MONGO_URL')
-    mongo_url = os.environ.get('MONGO_URL', local_url) or "mongodb://localhost:27017/"
-    client = MongoClient(mongo_url)
+    client = MongoClient("mongodb://root:root@localhost:27017")
     db = client["test_database"]
     collection = "users_test"
 
-    db.drop_collection(collection)
+    if collection in db.list_collection_names():
+        db.drop_collection(collection)
 
     db.create_collection(collection, validator=VALIDATOR)
-
     db[collection].create_index("email", unique=True)
     db[collection].create_index("name", unique=True)
 
     with patch("src.util.dao.getValidator", return_value=VALIDATOR):
-        dao = DAO(collection)
+        dao_instance = DAO(collection)
 
-    yield dao
+    yield dao_instance
 
     db.drop_collection(collection)
     client.close()
@@ -52,7 +56,6 @@ def test_create_valid_returns_inserted_document(dao):
     assert result["name"] == data["name"]
     assert result["email"] == data["email"]
     assert "_id" in result
-
 
 @pytest.mark.unit
 def test_create_missing_required_field(dao):
