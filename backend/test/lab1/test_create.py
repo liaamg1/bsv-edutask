@@ -27,7 +27,7 @@ def dao():
 
     db.create_collection(collection, validator=VALIDATOR)
     db[collection].create_index("email", unique=True)
-    db[collection].create_index("name", unique=True)
+    db[collection].create_index("name", unique=False)
 
     with patch("src.util.dao.getValidator", return_value=VALIDATOR):
         dao_instance = DAO(collection)
@@ -65,7 +65,7 @@ def test_create_type_invalid(dao):
         dao.create(data)
 
 @pytest.mark.unit
-def test_create_not_unique(dao):
+def test_create_not_unique_email(dao):
     """Data is not unique and raises WriteError"""
     data = {"name": "123","email":"local-part@domain.host"}
 
