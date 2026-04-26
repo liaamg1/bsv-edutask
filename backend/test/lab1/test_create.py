@@ -30,7 +30,6 @@ def dao():
 
     db.create_collection(collection, validator=VALIDATOR)
     db[collection].create_index("email", unique=True)
-    db[collection].create_index("name", unique=False)
 
     with patch("src.util.dao.getValidator", return_value=VALIDATOR):
         dao_instance = DAO(collection)
