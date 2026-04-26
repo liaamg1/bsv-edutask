@@ -11,7 +11,10 @@ VALIDATOR = {
         "required": ["name", "email"],
         "properties": {
             "name": {"bsonType": "string"},
-            "email": {"bsonType": "string"}
+            "email": {
+                "bsonType": "string", 
+                "uniqueItems": True
+            }
         }
     }
 }
