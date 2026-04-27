@@ -29,7 +29,24 @@ function login(){
     
     
 }
-describe('R8UC1', () => {
+describe('R8UC1 - ', () => {
+    login()
+    it('Write description and submit todo item successfully.', () => {
+        cy.get("#title").type("Go to the movies")
+        cy.get('input[value="Create new Task"]').click()
+        
+        cy.contains("Go to the movies").should("exist")
+    })
+    it('Empty description and submit disabled.', () => {
+        cy.get('input[value="Create new Task"]').should('be.disabled')
+        
+    })
+    after(() => {
+        cy.request('DELETE', `http://localhost:5000/users/${uid}`)
+    })
+})
+
+describe('R8UC3 - Delete todo-item', () => {
     login()
 
     after(() => {
