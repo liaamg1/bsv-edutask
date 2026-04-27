@@ -44,3 +44,14 @@ def test_get_user_by_email_invalid_single_user_returns_error():
 
     with pytest.raises(ValueError):
         controller.get_user_by_email("invalidEmail")
+
+def test_get_user_by_email_database_error_raises_exception():
+    """Db error"""
+
+    mock_dao = Mock()
+    mock_dao.find.side_effect = Exception("DB error")
+
+    controller = UserController(mock_dao)
+
+    with pytest.raises(Exception):
+        controller.get_user_by_email("valid@email.com")
