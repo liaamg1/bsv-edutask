@@ -1,7 +1,8 @@
-describe('R8UC1', () => {
-    let uid
-    let name
-    let email
+let uid
+let name
+let email
+function login(){
+    
     before(function () {
     cy.fixture('user.json')
     .then((user) => {
@@ -26,6 +27,11 @@ describe('R8UC1', () => {
         .submit()
     })
     
+    
+}
+describe('R8UC1', () => {
+    login()
+
     after(() => {
         cy.request('DELETE', `http://localhost:5000/users/${uid}`)
     })
