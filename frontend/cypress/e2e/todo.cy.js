@@ -29,7 +29,7 @@ function login(){
     
     
 }
-describe('R8UC1 - ', () => {
+describe('R8UC1 - Create Task', () => {
     login()
     it('Write description and submit todo item successfully.', () => {
         cy.get("#title").type("Go to the movies")
@@ -88,6 +88,27 @@ describe('R8UC2 - Toggle todo-item as done or active', () => {
 
 describe('R8UC3 - Delete todo-item', () => {
     login()
+
+    it("Delete todo-item", () => {
+        // Write Task Title
+        cy.get("#title").type("Go to the films")
+        // Create Task
+        cy.get('input[value="Create new Task"]').click()
+        // Enter Task
+        cy.get(".title-overlay").contains("Go to the films").click()
+        // Write Todo-Item
+        cy.get('input[placeholder="Add a new todo item"]').should('be.visible').type("Buy popcorn")
+        // Add Todo-Item
+        cy.get('input[value="Add"]').click()
+        // Delet Todo-Item X2
+        cy.contains('.todo-item', 'Buy popcorn')
+            .find('.remover')
+            .click()
+            .click()
+
+        // Assert
+        cy.contains('Buy popcorn').should('not.exist')
+    })
 
     after(() => {
         cy.request('DELETE', `http://localhost:5000/users/${uid}`)
