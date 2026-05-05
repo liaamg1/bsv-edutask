@@ -2,56 +2,55 @@ import pytest
 from unittest.mock import Mock
 from src.controllers.usercontroller import UserController
 
-def test_get_user_by_email_user_not_found ():
-    """None existing email returns nothing"""
-    mock_dao = Mock()
-    mock_dao.find.return_value = [] # No user found
-    user_controller = UserController(mock_dao)
+@pytest.fixture
+def mock_dao():
+    return Mock()
+
+@pytest.fixture
+def user_controller(mock_dao):
+    return UserController(mock_dao)
+
+def test_get_user_by_email_user_not_found(user_controller, mock_dao):
+    mock_dao.find.return_value = []
+
     result = user_controller.get_user_by_email("local-part@domain.host")
 
     assert result is None
 
-def test_get_user_by_email_many_users_found (capsys):
-    """Many of the same emails returns user, and warning"""
-    mock_dao = Mock()
+def test_get_user_by_email_many_users_found_returns_first_user(user_controller, mock_dao):
     mock_dao.find.return_value = [
-        {"email": "local-part@domain.host"}, 
+        {"email": "local-part@domain.host"},
         {"email": "local-part@domain.host"}
-    ] # multiple users found
+    ]
 
-    user_controller = UserController(mock_dao)
     result = user_controller.get_user_by_email("local-part@domain.host")
+
+    assert result["email"] == "local-part@domain.host"
+
+def test_get_user_by_email_many_users_found_prints_warning(user_controller, mock_dao, capsys):
+    mock_dao.find.return_value = [
+        {"email": "local-part@domain.host"},
+        {"email": "local-part@domain.host"}
+    ]
+
+    user_controller.get_user_by_email("local-part@domain.host")
     captured = capsys.readouterr()
 
-    assert result["email"]=="local-part@domain.host"
     assert "Error: more than one user found with mail local-part@domain.host" in captured.out
-def test_get_user_by_email_valid_single_user_returns_user():
-    """Valid user email exists and returns user"""
-    mock_dao=Mock()
+
+def test_get_user_by_email_valid_single_user_returns_user(user_controller, mock_dao):
     mock_dao.find.return_value = [{"email": "valid@email.com"}]
 
-    controller = UserController(mock_dao)
+    result = user_controller.get_user_by_email("valid@email.com")
 
-    result = controller.get_user_by_email("valid@email.com")
-    
-    assert result["email"]=="valid@email.com"
+    assert result["email"] == "valid@email.com"
 
-def test_get_user_by_email_invalid_single_user_returns_error():
-    """Invalid email and returns error"""
-    mock_dao=Mock()
-
-    controller = UserController(mock_dao)
-
+def test_get_user_by_email_invalid_email_raises_value_error(user_controller):
     with pytest.raises(ValueError):
-        controller.get_user_by_email("invalidEmail")
+        user_controller.get_user_by_email("invalidEmail")
 
-def test_get_user_by_email_database_error_raises_exception():
-    """Db error"""
-
-    mock_dao = Mock()
+def test_get_user_by_email_database_error_raises_exception(user_controller, mock_dao):
     mock_dao.find.side_effect = Exception("DB error")
 
-    controller = UserController(mock_dao)
-
     with pytest.raises(Exception):
-        controller.get_user_by_email("valid@email.com")
+        user_controller.get_user_by_email("valid@email.com")

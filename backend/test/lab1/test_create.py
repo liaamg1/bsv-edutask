@@ -46,9 +46,11 @@ def test_create_valid_returns_inserted_document(dao):
 
     result = dao.create(data)
 
-    assert result["name"] == data["name"]
-    assert result["email"] == data["email"]
-    assert "_id" in result
+    assert result == {
+        "name": data["name"],
+        "email": data["email"],
+        "_id": result["_id"]
+    }
 
 @pytest.mark.integration
 def test_create_missing_required_field(dao):
