@@ -104,11 +104,10 @@ describe('R8UC3 - Delete todo-item', () => {
         cy.contains('.todo-item', 'Buy popcorn')
             .find('.remover')
             .click()
-            .click()
-
         // Assert
-        cy.contains('Buy popcorn').should('not.exist')
-    })
+        cy.contains('.todo-item', 'Buy popcorn')
+            .should('not.exist')    
+        })
 
     after(() => {
         cy.request('DELETE', `http://localhost:5000/users/${uid}`)
