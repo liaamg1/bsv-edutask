@@ -27,5 +27,6 @@ jobs:
         working-directory: backend
         run: pip install -r requirements.pip
 
-      - name: Run tests
+      - name: Run unit tests
+        working-directory: backend
         run: pytest -m unit
