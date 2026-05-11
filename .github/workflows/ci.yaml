@@ -24,6 +24,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
+        working-directory: backend
         run: pip install -r requirements.pip
 
       - name: Run tests
